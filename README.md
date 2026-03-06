@@ -6,17 +6,14 @@ Retrieval-Augmented Generation (RAG) has emerged as a practical approach to miti
 In turn, the quality of retrieval depends mainly on the embedding model used. Generic embedding models are trained on broad web corpora and are not optimized for biomedical terminology, domain-specific abbreviations, or clinical semantic relationships.
 This project investigates whether domain-specialized embedding learning can significantly improve retrieval accuracy and answer faithfulness in a medical RAG system. Specifically, we evaluate multiple embedding training strategies including generic embeddings, biomedical pre-trained models, and contrastively fine-tuned domain embeddings within a controlled RAG architecture. The goal is to quantify how embedding specialization impacts retrieval metrics and downstream question answering performance.
 
----
 
 ## 2. Research Question
 **Can domain-specific embedding training improve retrieval quality and reduce hallucinations in medical Retrieval-Augmented Generation (RAG) systems?**
 
----
 
 ## 3.Problem Statement
 Large Language Models (LLMs) do not have up-to-date knowledge and often produce hallucinated or inaccurate answers in the medical domain. Retrieval-Augmented Generation (RAG) can mitigate this by grounding answers in external knowledge, but the retrieval quality depends heavily on the embedding model. Generic embeddings are not optimized for biomedical terminology, which can reduce retrieval relevance and answer faithfulness.
 
----
 
 ## 4. Project Objective
 This project aims to design and evaluate a medical RAG system grounded in PubMed abstracts and systematically compare two embedding training strategies:
@@ -30,7 +27,6 @@ The primary objective is to measure whether domain adaptation in the embedding l
 - Reduced hallucination rate in medical question answering
 By isolating the embedding model as the key experimental variable while keeping the retrieval database, language model, and prompting strategy constant, this study evaluates the direct impact of domain-specific embedding learning on end-to-end RAG performance.
 
----
 
 ## 5. System Architecture
 ### Proposed Method:
@@ -44,7 +40,6 @@ We will build a medical RAG system with the following pipeline:
 3. User queries are embedded and used to retrieve relevant documents.
 4. Retrieved biomedical evidence is passed to the LLM.
 5. The LLM generates an evidence-grounded medical answer.
----
 
 ## 6. Dataset, Models and Tools
 
@@ -57,8 +52,6 @@ This project leverages open-source datasets, embedding models, language models, 
 | PubMedQA | Biomedical question answering dataset containing expert-labeled answers and supporting abstracts. | https://huggingface.co/datasets/qiaojin/PubMedQA |
 | MedQuAD | Training data for embedding fine-tuning | https://huggingface.co/datasets/lavita/MedQuAD |
 
----
-
 ### Embedding Model
 
 | Model | Description | Source |
@@ -69,8 +62,6 @@ This model will be used as:
 - **Baseline embedding model**
 - **Fine-tuning starting point for domain-specialized embeddings**
 
----
-
 ### Language Model
 
 | Model | Description | Source |
@@ -78,8 +69,6 @@ This model will be used as:
 | Llama-3.2-1B-Instruct | Instruction-tuned LLM used to generate grounded answers using retrieved biomedical context. | https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct |
 
 The model receives retrieved PubMed abstracts as context and generates evidence-grounded answers.
-
----
 
 ### Vector Database
 
@@ -91,5 +80,3 @@ Weaviate enables:
 - Efficient similarity search
 - Retrieval of relevant PubMed abstracts
 - Integration with embedding models for RAG pipelines
-
----
