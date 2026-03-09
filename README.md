@@ -1,5 +1,8 @@
 # Domain-Specialized Embedding Learning for Medical Retrieval-Augmented Generation (RAG)
 
+## Team members
+Vishwa Gosavi and Aswini Sivakumar
+
 ## 1. Introduction
 Large Language Models (LLMs) have demonstrated strong performance in natural language understanding and generation tasks. However, when applied to high-stakes domains such as medicine, these models often produce hallucinated or factually incorrect responses. This limitation poses significant risks in biomedical question answering, where accuracy, evidence grounding, and citation reliability are critical.
 
@@ -83,5 +86,6 @@ Weaviate enables:
 - Efficient similarity search
 - Retrieval of relevant PubMed abstracts
 - Integration with embedding models for RAG pipelines
+
 
 
