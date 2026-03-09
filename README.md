@@ -2,9 +2,12 @@
 
 ## 1. Introduction
 Large Language Models (LLMs) have demonstrated strong performance in natural language understanding and generation tasks. However, when applied to high-stakes domains such as medicine, these models often produce hallucinated or factually incorrect responses. This limitation poses significant risks in biomedical question answering, where accuracy, evidence grounding, and citation reliability are critical.
+
 Retrieval-Augmented Generation (RAG) has emerged as a practical approach to mitigate hallucination by conditioning model outputs on retrieved external knowledge. In medical applications, RAG systems typically retrieve biomedical literature (e.g., PubMed abstracts) and provide context to an LLM before generating an answer. While this improves factual grounding, the effectiveness of RAG is highly dependent on the quality of the retrieval component.
+
 In turn, the quality of retrieval depends mainly on the embedding model used. Generic embedding models are trained on broad web corpora and are not optimized for biomedical terminology, domain-specific abbreviations, or clinical semantic relationships.
-This project investigates whether domain-specialized embedding learning can significantly improve retrieval accuracy and answer faithfulness in a medical RAG system. Specifically, we evaluate multiple embedding training strategies including generic embeddings, biomedical pre-trained models, and contrastively fine-tuned domain embeddings within a controlled RAG architecture. The goal is to quantify how embedding specialization impacts retrieval metrics and downstream question answering performance.
+
+This project investigates whether domain-specialized embedding learning can significantly improve retrieval accuracy and answer faithfulness in a medical RAG system. Specifically, we evaluate multiple embedding training strategies, including generic embeddings, biomedical pre-trained models, and contrastively fine-tuned domain embeddings within a controlled RAG architecture. The goal is to quantify how embedding specialization impacts retrieval metrics and downstream question answering performance.
 
 
 ## 2. Research Question
@@ -31,7 +34,7 @@ By isolating the embedding model as the key experimental variable while keeping 
 ## 5. System Architecture
 ### Proposed Method:
 We will build a medical RAG system with the following pipeline:
-
+![System Diagram](System_Diagram.png)
 
 ### System Pipeline
 
@@ -80,3 +83,4 @@ Weaviate enables:
 - Efficient similarity search
 - Retrieval of relevant PubMed abstracts
 - Integration with embedding models for RAG pipelines
+
