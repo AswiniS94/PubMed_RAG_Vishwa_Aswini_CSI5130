@@ -44,7 +44,7 @@ We will build a medical RAG system with the following pipeline:
 4. Retrieved biomedical evidence is passed to the LLM.
 5. The LLM generates an evidence-grounded medical answer.
 
-## 6. Dataset, Models and Tools
+## 6. Dataset, Models, and Tools
 
 This project leverages open-source datasets, embedding models, language models, and vector databases to build the medical RAG system.
 
@@ -69,9 +69,9 @@ This model will be used as:
 
 | Model | Description | Source |
 |------|-------------|--------|
-| Llama-3.2-1B-Instruct | Instruction-tuned LLM used to generate grounded answers using retrieved biomedical context. | https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct |
+| Llama-3.2-1B-Instruct | Instruction-tuned LLM. | https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct |
 
-The model receives retrieved PubMed abstracts as context and generates evidence-grounded answers.
+The model will use retrieved PubMed abstracts as context and generate evidence-grounded answers for the user query.
 
 ### Vector Database
 
@@ -83,4 +83,5 @@ Weaviate enables:
 - Efficient similarity search
 - Retrieval of relevant PubMed abstracts
 - Integration with embedding models for RAG pipelines
+
 
