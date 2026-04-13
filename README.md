@@ -27,9 +27,9 @@ This project aims to design and evaluate a medical RAG system grounded in PubMed
 2. A domain-specialized embedding model trained or fine-tuned on biomedical literature.
 
 The primary objective is to measure whether domain adaptation in the embedding layer leads to:
-- Improved retrieval relevance (Recall)
+- Improved retrieval relevance (Recall@K, MRR@10)
 - Higher citation alignment with retrieved documents
-- Improved factual consistency in generated answers
+- Improved factual consistency in generated answers (Yes/No/Maybe accuracy)
 - Reduced hallucination rate in medical question answering
 By isolating the embedding model as the key experimental variable while keeping the retrieval database, language model, and prompting strategy constant, this study evaluates the direct impact of domain-specific embedding learning on end-to-end RAG performance.
 
@@ -37,15 +37,15 @@ By isolating the embedding model as the key experimental variable while keeping 
 ## 5. System Architecture
 ### Proposed Method:
 We will build a medical RAG system with the following pipeline:
-![System Diagram](System_Diagram.png)
+![System Diagram](RAG_pipeline_image.png)
 
 ### System Pipeline
 
 1. PubMed abstracts are embedded using the embedding model.
-2. Embeddings are stored in the Weaviate vector database.
-3. User queries are embedded and used to retrieve relevant documents.
-4. Retrieved biomedical evidence is passed to the LLM.
-5. The LLM generates an evidence-grounded medical answer.
+2. Embeddings and metadata are stored dynamically in the Weaviate cloud vector database.
+3. User queries are embedded and used to retrieve the most relevant documents via Hybrid search.
+4. Retrieved biomedical evidence is passed to the LLM via LangChain.
+5. The LLM generates a strictly constrained, evidence-grounded medical answer (Yes/No/Maybe).
 
 ## 6. Dataset, Models, and Tools
 
@@ -53,39 +53,59 @@ This project leverages open-source datasets, embedding models, language models, 
 
 ### Dataset
 
-| Dataset | Description | Source |
-|-------|-------------|--------|
-| PubMedQA | Biomedical question answering dataset containing expert-labeled answers and supporting abstracts. | https://huggingface.co/datasets/qiaojin/PubMedQA |
-| MedQuAD | Training data for embedding fine-tuning | https://huggingface.co/datasets/lavita/MedQuAD |
+| Dataset | Split Used | Description | Source |
+|-------|------------|-------------|--------|
+| PubMedQA | pqa_unlabeled | Sampled 10,000 records to extract question-context pairs for **Contrastive Fine-tuning** | [qiaojin/PubMedQA](https://huggingface.co/datasets/qiaojin/PubMedQA) |
+| PubMedQA | pqa_labeled | Used to populate the Vector DB and evaluate the end-to-end RAG pipeline (1000 expert-labeled questions) | [qiaojin/PubMedQA](https://huggingface.co/datasets/qiaojin/PubMedQA) |
 
 ### Embedding Model
 
 | Model | Description | Source |
 |------|-------------|--------|
-| Qwen3-Embedding-0.6B | Lightweight embedding model used to generate vector representations of biomedical documents and queries. | https://huggingface.co/Qwen/Qwen3-Embedding-0.6B |
+| all-MiniLM-L12-v2 | Baseline general-purpose sentence embedding models. | [sentence-transformers/all-MiniLM-L12-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2) |
+| mini-pubmedqa-finetuned | Our **domain-specialized model**, fine-tuned via contrastive learning (InfoNCE) on 10,000 PubMedQA pairs. | [AswiniSivakumar/mini-pubmedqa-finetuned](https://huggingface.co/AswiniSivakumar/mini-pubmedqa-finetuned) |
 
-This model will be used as:
+This *all-MiniLM-L12-v2* model will be used as:
 - **Baseline embedding model**
 - **Fine-tuning starting point for domain-specialized embeddings**
 
 ### Language Model
 
+The model will be used to interpret retrieved contexts and strictly generate "Yes", "No", or "Maybe" answers for the user query:
+
 | Model | Description | Source |
 |------|-------------|--------|
-| Llama-3.2-1B-Instruct | Instruction-tuned LLM. | https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct |
-
-The model will use retrieved PubMed abstracts as context and generate evidence-grounded answers for the user query.
-
-### Vector Database
-
-| Tool | Purpose | Source |
-|-----|---------|--------|
-| Weaviate Cloud | Vector database used to index biomedical documents and perform semantic search over embeddings. | https://console.weaviate.cloud |
-
-Weaviate enables:
-- Efficient similarity search
-- Retrieval of relevant PubMed abstracts
-- Integration with embedding models for RAG pipelines
+| Llama-3.2-1B-Instruct | Lightweight instruction-tuned LLM optimal for Colab T4 inference. | [meta-llama/Llama-3.2-1B-Instruct](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct) |
 
 
+### Infrastructure and Tools
 
+| Tool | Purpose | 
+|-----|---------|
+| Weaviate Cloud | Vector database for index biomedical documents and perform semantic search over embeddings. |
+| SentenceTransformers | Framework used for the *MultipleNegativesRankingLoss* contrastive fine-tuning.|
+| LangChain | Framework to construct the RAG retrieval chain, text-splitters, and prompting logic.| 
+| Gradio | Interactive user interface allowing users to ask queries, select models dynamically, and view retrieved evidence.|
+| Google Colab | Cloud-based Jupyter notebook environment to perform model fine-tuning and LLM inference using *T4 GPU runtime* |
+
+### Implementation and Evaluation Details
+
+#### **Fine-Tuning Phase:**
+- **Objective:** Teach a base MiniLM model to map medical questions closer to their corresponding medical abstracts in vector space
+- **Methodology:** Used *MultipleNegativesRankingLoss* with a batch size of 32 (utilizing in-batch negatives)
+- **Result:** Slight improvement in *Accuracy@1* and *MRR@10* over the generic pre-trained baseline.
+
+![System Diagram](Finetune_process_image.png)
+
+#### **RAG Construction Phase:**
+- **Database:** Implemented dynamic weaviate collections based on the selected embedding model.
+- **LLM Optimization:** Deployed models using HuggingFace pipelines with *torch.float16* and *Scaled Dot Product Attention (SDPA)* for optimal Google Colab T4 compatibility.
+
+#### **Evaluation Strategy:**
+- **Embedding Evaluation:** Calculated *Recall@5*, *Recall@10*, and *MRR@10* using *InformationRetreivalEvaluator* on the test split.
+- **End-to-End RAG Evaluation:** Batched inference over the 1000 questions in *pqa_labed* dataset, using *regex* cleaning to compare the generated answers against the ground-truth labels and calculate category-specific (Yes/No/Maybe) accuracy percentages.
+
+### For grading:
+The following link has the notebook with outputs:
+- [Finetune-MiniLM](https://colab.research.google.com/drive/1FvtCNoNvAgxeN23G68hrW7iGLrPzsF-8#scrollTo=YfCSVPQhDY3J)
+- [RAG](https://colab.research.google.com/drive/13iWNEzLZxeeGRNARqIbaSWxyrBWK13gm)
