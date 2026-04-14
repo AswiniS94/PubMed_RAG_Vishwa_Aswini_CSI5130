@@ -3,6 +3,13 @@
 ## Team members
 Vishwa Gosavi and Aswini Sivakumar
 
+### For grading:
+[Video of presentation](https://drive.google.com/file/d/16lDLcY5c6GlzpO0cJrL6Mm0MHxACUi4N/view?usp=sharing)
+
+The following link has the notebook with outputs:
+- [Finetune-MiniLM](https://colab.research.google.com/drive/1FvtCNoNvAgxeN23G68hrW7iGLrPzsF-8#scrollTo=YfCSVPQhDY3J)
+- [RAG](https://colab.research.google.com/drive/13iWNEzLZxeeGRNARqIbaSWxyrBWK13gm)
+
 ## 1. Introduction
 Large Language Models (LLMs) have demonstrated strong performance in natural language understanding and generation tasks. However, when applied to high-stakes domains such as medicine, these models often produce hallucinated or factually incorrect responses. This limitation poses significant risks in biomedical question answering, where accuracy, evidence grounding, and citation reliability are critical.
 
@@ -105,7 +112,3 @@ The model will be used to interpret retrieved contexts and strictly generate "Ye
 - **Embedding Evaluation:** Calculated *Recall@5*, *Recall@10*, and *MRR@10* using *InformationRetreivalEvaluator* on the test split.
 - **End-to-End RAG Evaluation:** Batched inference over the 1000 questions in *pqa_labed* dataset, using *regex* cleaning to compare the generated answers against the ground-truth labels and calculate category-specific (Yes/No/Maybe) accuracy percentages.
 
-### For grading:
-The following link has the notebook with outputs:
-- [Finetune-MiniLM](https://colab.research.google.com/drive/1FvtCNoNvAgxeN23G68hrW7iGLrPzsF-8#scrollTo=YfCSVPQhDY3J)
-- [RAG](https://colab.research.google.com/drive/13iWNEzLZxeeGRNARqIbaSWxyrBWK13gm)
